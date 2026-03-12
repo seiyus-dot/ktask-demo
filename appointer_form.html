@@ -93,21 +93,24 @@ body {
 .main {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 .main-inner {
+  height: 100%;
+  box-sizing: border-box;
   max-width: 640px;
   margin: 0 auto;
-  padding: 20px 16px 24px;
+  padding: 16px 16px 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── STEP INDICATOR ── */
 .steps {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   align-items: center;
+  flex-shrink: 0;
 }
 .step-item {
   display: flex;
@@ -180,10 +183,14 @@ body {
   margin-top: 1px;
 }
 .card-body {
-  padding: 16px 18px;
+  padding: 16px 18px 24px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ── FIELD ── */
@@ -585,7 +592,12 @@ textarea { resize: none; line-height: 1.6; }
 
 /* ── STEP TABS ── */
 .step-card { display: none; }
-.step-card.active { display: block; }
+.step-card.active {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
 .step-item { cursor: pointer; }
 .step-item:hover .step-dot { border-color: var(--navy); }
 </style>
