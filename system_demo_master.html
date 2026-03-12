@@ -540,19 +540,18 @@
             try {
                 const doc = iframe.contentDocument || iframe.contentWindow.document;
                 const body = doc.body;
-                const html = doc.documentElement;
                 // min-height / padding-bottom を一時的に無効化して実コンテンツ高さを計測
-                const prevBodyMinH  = body.style.minHeight;
-                const prevBodyPadB  = body.style.paddingBottom;
-                const prevHtmlMinH  = html.style.minHeight;
-                body.style.minHeight    = '0';
+                const prevMinH = body.style.minHeight;
+                const prevPadB = body.style.paddingBottom;
+                body.style.minHeight = '0';
                 body.style.paddingBottom = '0';
-                html.style.minHeight    = '0';
-                const h = Math.max(body.scrollHeight, body.offsetHeight);
-                body.style.minHeight    = prevBodyMinH;
-                body.style.paddingBottom = prevBodyPadB;
-                html.style.minHeight    = prevHtmlMinH;
-                if (h > 100) iframe.style.height = h + 'px';
+                const h = body.scrollHeight;
+                body.style.minHeight = prevMinH;
+                body.style.paddingBottom = prevPadB;
+                // 高さが変わったときだけ更新（不要な reflow を防ぐ）
+                if (h > 100 && iframe.style.height !== h + 'px') {
+                    iframe.style.height = h + 'px';
+                }
             } catch (e) {}
         }
 
@@ -561,16 +560,20 @@
             const iframes = document.querySelectorAll('.device-frame iframe, #view1');
             iframes.forEach(iframe => {
                 iframe.addEventListener('load', function () {
-                    resizeIframe(this);
-                    setTimeout(() => resizeIframe(this), 300);
-                    setTimeout(() => resizeIframe(this), 1000);
+                    const me = this;
+                    resizeIframe(me);
+                    // ロード直後に一度だけ再計測（フォントなど遅延読み込み対応）
+                    setTimeout(() => resizeIframe(me), 400);
+                    // ResizeObserver でコンテンツ変化を監視（ポーリング不要）
+                    try {
+                        const ro = new me.contentWindow.ResizeObserver(() => resizeIframe(me));
+                        ro.observe(me.contentDocument.body);
+                    } catch (e) {}
                 });
                 // すでに読み込み済みの場合
                 if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
                     resizeIframe(iframe);
                 }
-                // 高さ変化に対応するポーリング
-                setInterval(() => resizeIframe(iframe), 1500);
             });
         }
 
