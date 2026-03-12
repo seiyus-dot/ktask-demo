@@ -56,6 +56,7 @@
             font-weight: 900;
         }
 
+        /* PC用ナビ */
         .view-controls {
             display: flex;
             gap: 8px;
@@ -81,6 +82,140 @@
             background: var(--blue);
             color: white;
             box-shadow: 0 2px 8px rgba(27, 79, 216, 0.5);
+        }
+
+        /* --- ハンバーガーボタン (モバイルのみ) --- */
+        .hamburger-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            flex-direction: column;
+            gap: 5px;
+            order: -1;
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* --- モバイルメニューオーバーレイ --- */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+        }
+
+        .mobile-menu.open {
+            display: block;
+        }
+
+        .mobile-menu-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .mobile-menu-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100%;
+            background: var(--navy);
+            padding: 0;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mobile-menu.open .mobile-menu-panel {
+            transform: translateX(0);
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .mobile-menu-title {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .mobile-menu-items {
+            padding: 12px;
+        }
+
+        .mobile-nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .mobile-nav-btn .nav-icon {
+            font-size: 20px;
+            width: 32px;
+            text-align: center;
+        }
+
+        .mobile-nav-btn .nav-label {
+            flex: 1;
+        }
+
+        .mobile-nav-btn .nav-sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 400;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .mobile-nav-btn.active {
+            background: var(--blue);
+            color: white;
+        }
+
+        .mobile-nav-btn.active .nav-sub {
+            color: rgba(255, 255, 255, 0.7);
         }
 
         /* --- MAIN CONTAINER --- */
@@ -117,9 +252,7 @@
         .device-frame {
             width: 390px;
             height: 844px;
-            /* iPhone 13 Pro size */
             background: var(--navy);
-            /* ノッチと同化させるため背景をNavyに */
             border-radius: 40px;
             border: 12px solid #0f172a;
             overflow: hidden;
@@ -130,9 +263,7 @@
         .device-frame iframe {
             width: 100%;
             height: calc(100% - 44px);
-            /* ノッチの高さ分を引く */
             margin-top: 44px;
-            /* ノッチの下からiframeをスタート */
             border: none;
             background: var(--gray2);
             border-radius: 0 0 28px 28px;
@@ -163,6 +294,38 @@
             z-index: 1000;
             border-left: 4px solid var(--blue);
             animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .workflow-guide.hidden {
+            transform: translateY(120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 説明トグルボタン */
+        .guide-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--navy);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .guide-toggle:hover {
+            transform: scale(1.1);
         }
 
         @keyframes slideIn {
@@ -221,12 +384,100 @@
             justify-content: center;
             gap: 8px;
         }
+
+        /* --- モバイル対応 --- */
+        @media (max-width: 768px) {
+            .master-header {
+                padding: 12px 16px;
+            }
+
+            /* PCナビを非表示 */
+            .view-controls {
+                display: none;
+            }
+
+            /* ハンバーガー表示 */
+            .hamburger-btn {
+                display: flex;
+            }
+
+            .mh-title {
+                font-size: 14px;
+            }
+
+            /* スマホでは device-frame を外してiframeを全画面に */
+            .mobile-view {
+                background: var(--gray2);
+            }
+
+            .device-frame {
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
+            }
+
+            .device-frame iframe {
+                height: 100%;
+                margin-top: 0;
+                border-radius: 0;
+            }
+
+            .notch {
+                display: none;
+            }
+
+            /* 説明パネルを非表示 */
+            .workflow-guide {
+                display: none;
+            }
+        }
     </style>
 </head>
 
 <body>
 
+    <!-- モバイルメニュー -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-backdrop" onclick="closeMobileMenu()"></div>
+        <div class="mobile-menu-panel">
+            <div class="mobile-menu-header">
+                <span class="mobile-menu-title">MENU</span>
+                <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+            </div>
+            <div class="mobile-menu-items">
+                <button class="mobile-nav-btn active" id="mnav0" onclick="switchView(0); closeMobileMenu()">
+                    <span class="nav-icon">📞</span>
+                    <span class="nav-label">
+                        ① アポ入力
+                        <span class="nav-sub">スマホ画面</span>
+                    </span>
+                </button>
+                <button class="mobile-nav-btn" id="mnav1" onclick="switchView(1); closeMobileMenu()">
+                    <span class="nav-icon">👑</span>
+                    <span class="nav-label">
+                        ② 配車管理
+                        <span class="nav-sub">PC画面</span>
+                    </span>
+                </button>
+                <button class="mobile-nav-btn" id="mnav2" onclick="switchView(2); closeMobileMenu()">
+                    <span class="nav-icon">🚗</span>
+                    <span class="nav-label">
+                        ③ クローザー報告
+                        <span class="nav-sub">スマホ画面</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="master-header">
+        <button class="hamburger-btn" onclick="openMobileMenu()" aria-label="メニューを開く">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
         <div class="mh-title">
             <div class="logo-box">K-TASK</div>
             出張買取 統合システム・デモ
@@ -259,13 +510,13 @@
         </div>
     </div>
 
-    <div class="workflow-guide">
+    <div class="workflow-guide" id="workflowGuide">
         <div class="guide-step active" id="guide0">
             <div class="step-num">STEP 1/3</div>
             <div class="step-title">📞 アポインターが情報を入力</div>
             <div class="step-desc">
                 テレアポ担当が、獲得したアポ情報をお客様目線で入力します。<br>
-                入力されたデータは、すべて**裏側のデータベース**へ保存されます。
+                入力されたデータは、すべて裏側のデータベースへ保存されます。
             </div>
             <button class="next-btn" onclick="switchView(1)">次へ：配車管理を見る ➔</button>
         </div>
@@ -275,7 +526,7 @@
             <div class="step-title">👑 アポカンがクローザーをアサイン</div>
             <div class="step-desc">
                 入力された最新のアポがPC画面にリアルタイムで並びます。<br>
-                管理者は**「担当クローザー」**のプルダウンを選ぶだけで、アサインが完了します。
+                管理者は「担当クローザー」のプルダウンを選ぶだけで、アサインが完了します。
             </div>
             <button class="next-btn" onclick="switchView(2)">次へ：クローザー画面を見る ➔</button>
         </div>
@@ -285,7 +536,7 @@
             <div class="step-title">🚗 クローザーがAIを使い現場報告</div>
             <div class="step-desc">
                 自分のスマホを開くと、アサインされた案件だけが表示されています。<br>
-                「報告する」を押し、伝票をカメラでパシャッと撮るだけで、**AIが金額と品目を自動入力**。そのまま日報が完成します！
+                「報告する」を押し、伝票をカメラでパシャッと撮るだけで、AIが金額と品目を自動入力。そのまま日報が完成します！
             </div>
             <button class="next-btn" style="background:var(--blue);" onclick="switchView(0)">🔄 最初から見る</button>
         </div>
@@ -293,26 +544,43 @@
 
     <script>
         function switchView(index) {
-            // 1. ボタンのアクティブ状態を切り替え
+            // PCナビのアクティブ
             const btns = document.querySelectorAll('.vc-btn');
             btns.forEach((btn, i) => {
                 if (i === index) btn.classList.add('active');
                 else btn.classList.remove('active');
             });
 
-            // 2. iframe コンテナの切り替え
+            // モバイルナビのアクティブ
+            for (let i = 0; i <= 2; i++) {
+                const mnav = document.getElementById('mnav' + i);
+                if (mnav) {
+                    if (i === index) mnav.classList.add('active');
+                    else mnav.classList.remove('active');
+                }
+            }
+
+            // iframeコンテナの切り替え
             for (let i = 0; i <= 2; i++) {
                 const view = document.getElementById('view' + i);
                 if (i === index) view.classList.add('active');
                 else view.classList.remove('active');
             }
 
-            // 3. ガイドの切り替え
+            // ガイドの切り替え
             for (let i = 0; i <= 2; i++) {
                 const guide = document.getElementById('guide' + i);
                 if (i === index) guide.classList.add('active');
                 else guide.classList.remove('active');
             }
+        }
+
+        function openMobileMenu() {
+            document.getElementById('mobileMenu').classList.add('open');
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('mobileMenu').classList.remove('open');
         }
     </script>
 
