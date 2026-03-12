@@ -562,13 +562,9 @@
                 iframe.addEventListener('load', function () {
                     const me = this;
                     resizeIframe(me);
-                    // ロード直後に一度だけ再計測（フォントなど遅延読み込み対応）
+                    // フォントなど遅延ロード後に一度だけ再計測
                     setTimeout(() => resizeIframe(me), 400);
-                    // ResizeObserver でコンテンツ変化を監視（ポーリング不要）
-                    try {
-                        const ro = new me.contentWindow.ResizeObserver(() => resizeIframe(me));
-                        ro.observe(me.contentDocument.body);
-                    } catch (e) {}
+                    setTimeout(() => resizeIframe(me), 1200);
                 });
                 // すでに読み込み済みの場合
                 if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
@@ -605,6 +601,19 @@
 
             // 切り替え時はトップへ
             window.scrollTo(0, 0);
+
+            // 切り替え先のiframeを再計測（display:noneから復帰後に高さが正確になる）
+            if (window.innerWidth <= 768) {
+                const activeView = document.getElementById('view' + index);
+                if (activeView) {
+                    const iframe = activeView.tagName === 'IFRAME'
+                        ? activeView
+                        : activeView.querySelector('iframe');
+                    if (iframe) {
+                        setTimeout(() => resizeIframe(iframe), 50);
+                    }
+                }
+            }
         }
 
         function openMobileMenu() {
