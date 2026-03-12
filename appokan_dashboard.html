@@ -146,9 +146,14 @@ body {
   background: white; border-radius: var(--radius);
   box-shadow: var(--shadow); overflow: hidden;
 }
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 table {
   width: 100%; border-collapse: collapse;
   font-size: 13px;
+  min-width: 900px;
 }
 thead tr {
   background: var(--gray1);
@@ -561,6 +566,7 @@ mlabel, .mlabel {
 
   <!-- TABLE -->
   <div class="table-wrap">
+    <div class="table-scroll">
     <table id="mainTable">
       <thead>
         <tr>
@@ -578,6 +584,7 @@ mlabel, .mlabel {
       </thead>
       <tbody id="tableBody"></tbody>
     </table>
+    </div>
     <div class="pagination">
       <div>全24件中 1〜10件を表示</div>
       <div class="pg-btns">

@@ -577,6 +577,12 @@ textarea { resize: none; line-height: 1.6; }
   background: var(--gray3);
   margin: 4px 0;
 }
+
+/* ── STEP TABS ── */
+.step-card { display: none; }
+.step-card.active { display: block; }
+.step-item { cursor: pointer; }
+.step-item:hover .step-dot { border-color: var(--navy); }
 </style>
 </head>
 <body>
@@ -602,17 +608,17 @@ textarea { resize: none; line-height: 1.6; }
 
   <!-- STEP INDICATOR -->
   <div class="steps">
-    <div class="step-item active" id="step1">
+    <div class="step-item active" id="step1" onclick="goToStep(1)">
       <div class="step-dot">1</div>
       お客様情報
     </div>
     <div class="step-sep"></div>
-    <div class="step-item" id="step2">
+    <div class="step-item" id="step2" onclick="goToStep(2)">
       <div class="step-dot">2</div>
       アポ内容
     </div>
     <div class="step-sep"></div>
-    <div class="step-item" id="step3">
+    <div class="step-item" id="step3" onclick="goToStep(3)">
       <div class="step-dot">3</div>
       確認・保存
     </div>
@@ -632,7 +638,7 @@ textarea { resize: none; line-height: 1.6; }
   </div>
 
   <!-- ─ SECTION 1: お客様情報 ─ -->
-  <div class="card" id="section1">
+  <div class="card step-card active" id="section1">
     <div class="card-header">
       <div class="card-icon" style="background:#EEF3FF;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B4FD8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
       <div>
@@ -678,7 +684,7 @@ textarea { resize: none; line-height: 1.6; }
   </div>
 
   <!-- ─ SECTION 2: アポ内容 ─ -->
-  <div class="card" id="section2">
+  <div class="card step-card" id="section2">
     <div class="card-header">
       <div class="card-icon" style="background:#E0F6FC;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0891B2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
       <div>
@@ -764,7 +770,7 @@ textarea { resize: none; line-height: 1.6; }
   </div>
 
   <!-- ─ SECTION 3: アポインター ─ -->
-  <div class="card">
+  <div class="card step-card" id="section3">
     <div class="card-header">
       <div class="card-icon" style="background:#F3EEFF;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B21B6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
       <div>
@@ -800,9 +806,9 @@ textarea { resize: none; line-height: 1.6; }
 <!-- BOTTOM BAR -->
 <div class="bottom-bar">
   <div class="bottom-inner">
-    <button class="btn btn-save" onclick="saveDraft()">一時保存</button>
-    <button class="btn btn-primary" onclick="saveItem()">
-      保存して次へ ›
+    <button class="btn btn-save" id="leftBtn" onclick="leftAction()">一時保存</button>
+    <button class="btn btn-primary" id="rightBtn" onclick="rightAction()">
+      次へ ›
     </button>
   </div>
 </div>
@@ -847,7 +853,7 @@ function saveItem() {
   renderSaved();
   clearForm();
   showToast('保存しました（' + savedItems.length + '件）');
-  updateProgress();
+  goToStep(1);
 }
 
 // ── SAVE DRAFT ──
@@ -911,9 +917,42 @@ function showToast(msg, bg) {
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+// ── STEP NAVIGATION ──
+let currentStep = 1;
+
+function goToStep(step) {
+  currentStep = step;
+  for (let i = 1; i <= 3; i++) {
+    const card = document.getElementById('section' + i);
+    if (card) card.classList.toggle('active', i === step);
+    const dot = document.getElementById('step' + i);
+    if (dot) {
+      dot.className = 'step-item';
+      if (i === step) dot.classList.add('active');
+      else if (i < step) dot.classList.add('done');
+    }
+  }
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
+  leftBtn.textContent = step === 1 ? '一時保存' : '← 戻る';
+  rightBtn.textContent = step < 3 ? '次へ ›' : '保存して完了';
+  window.scrollTo(0, 0);
+  updateProgress();
+}
+
+function leftAction() {
+  if (currentStep === 1) saveDraft();
+  else goToStep(currentStep - 1);
+}
+
+function rightAction() {
+  if (currentStep < 3) goToStep(currentStep + 1);
+  else saveItem();
+}
+
 // ── INIT ──
 document.getElementById('visitDate').valueAsDate = new Date();
-updateProgress();
+goToStep(1);
 </script>
 </body>
 </html>
