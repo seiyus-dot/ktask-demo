@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-TASK 統合システム デモンストレーション</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0D1F3C;
+            --blue: #1B4FD8;
+            --gray2: #F1F5F9;
+            --gray3: #E2E8F0;
+            --gray6: #334155;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--gray2);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- MASTER HEADER --- */
+        .master-header {
+            background: var(--navy);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
+
+        .mh-title {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-box {
+            background: white;
+            color: var(--navy);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px;
+            border-radius: 12px;
+        }
+
+        .vc-btn {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .vc-btn.active {
+            background: var(--blue);
+            color: white;
+            box-shadow: 0 2px 8px rgba(27, 79, 216, 0.5);
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .master-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .iframe-container {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .iframe-container.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 端末サイズのエミュレート (スマホ画面用) */
+        .mobile-view {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #334155;
+        }
+
+        .device-frame {
+            width: 390px;
+            height: 844px;
+            /* iPhone 13 Pro size */
+            background: var(--navy);
+            /* ノッチと同化させるため背景をNavyに */
+            border-radius: 40px;
+            border: 12px solid #0f172a;
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .device-frame iframe {
+            width: 100%;
+            height: calc(100% - 44px);
+            /* ノッチの高さ分を引く */
+            margin-top: 44px;
+            /* ノッチの下からiframeをスタート */
+            border: none;
+            background: var(--gray2);
+            border-radius: 0 0 28px 28px;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 28px;
+            background: #0f172a;
+            border-radius: 0 0 16px 16px;
+            z-index: 100;
+        }
+
+        /* --- ワークフロー解説 --- */
+        .workflow-guide {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            width: 320px;
+            z-index: 1000;
+            border-left: 4px solid var(--blue);
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .guide-step {
+            display: none;
+        }
+
+        .guide-step.active {
+            display: block;
+        }
+
+        .step-num {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--blue);
+            margin-bottom: 4px;
+        }
+
+        .step-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: var(--gray6);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .next-btn {
+            width: 100%;
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="master-header">
+        <div class="mh-title">
+            <div class="logo-box">K-TASK</div>
+            出張買取 統合システム・デモ
+        </div>
+        <div class="view-controls">
+            <button class="vc-btn active" onclick="switchView(0)">① アポ入力 (スマホ)</button>
+            <button class="vc-btn" onclick="switchView(1)">② 配車管理 (PC)</button>
+            <button class="vc-btn" onclick="switchView(2)">③ クローザー報告 (スマホ)</button>
+        </div>
+    </div>
+
+    <div class="master-content">
+        <!-- 1. アポインター (スマホサイズ) -->
+        <div class="iframe-container mobile-view active" id="view0">
+            <div class="device-frame">
+                <div class="notch"></div>
+                <iframe src="appointer_form.html"></iframe>
+            </div>
+        </div>
+
+        <!-- 2. アポカン (PC全画面) -->
+        <iframe class="iframe-container" id="view1" src="appokan_dashboard.html"></iframe>
+
+        <!-- 3. クローザー (スマホサイズ) -->
+        <div class="iframe-container mobile-view" id="view2">
+            <div class="device-frame">
+                <div class="notch"></div>
+                <iframe src="closer_dashboard.html"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="workflow-guide">
+        <div class="guide-step active" id="guide0">
+            <div class="step-num">STEP 1/3</div>
+            <div class="step-title">📞 アポインターが情報を入力</div>
+            <div class="step-desc">
+                テレアポ担当が、獲得したアポ情報をお客様目線で入力します。<br>
+                入力されたデータは、すべて**裏側のデータベース**へ保存されます。
+            </div>
+            <button class="next-btn" onclick="switchView(1)">次へ：配車管理を見る ➔</button>
+        </div>
+
+        <div class="guide-step" id="guide1">
+            <div class="step-num">STEP 2/3</div>
+            <div class="step-title">👑 アポカンがクローザーをアサイン</div>
+            <div class="step-desc">
+                入力された最新のアポがPC画面にリアルタイムで並びます。<br>
+                管理者は**「担当クローザー」**のプルダウンを選ぶだけで、アサインが完了します。
+            </div>
+            <button class="next-btn" onclick="switchView(2)">次へ：クローザー画面を見る ➔</button>
+        </div>
+
+        <div class="guide-step" id="guide2">
+            <div class="step-num">STEP 3/3</div>
+            <div class="step-title">🚗 クローザーがAIを使い現場報告</div>
+            <div class="step-desc">
+                自分のスマホを開くと、アサインされた案件だけが表示されています。<br>
+                「報告する」を押し、伝票をカメラでパシャッと撮るだけで、**AIが金額と品目を自動入力**。そのまま日報が完成します！
+            </div>
+            <button class="next-btn" style="background:var(--blue);" onclick="switchView(0)">🔄 最初から見る</button>
+        </div>
+    </div>
+
+    <script>
+        function switchView(index) {
+            // 1. ボタンのアクティブ状態を切り替え
+            const btns = document.querySelectorAll('.vc-btn');
+            btns.forEach((btn, i) => {
+                if (i === index) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+
+            // 2. iframe コンテナの切り替え
+            for (let i = 0; i <= 2; i++) {
+                const view = document.getElementById('view' + i);
+                if (i === index) view.classList.add('active');
+                else view.classList.remove('active');
+            }
+
+            // 3. ガイドの切り替え
+            for (let i = 0; i <= 2; i++) {
+                const guide = document.getElementById('guide' + i);
+                if (i === index) guide.classList.add('active');
+                else guide.classList.remove('active');
+            }
+        }
+    </script>
+
+</body>
+
+</html>
