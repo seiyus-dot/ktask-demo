@@ -584,19 +584,6 @@ textarea { resize: none; line-height: 1.6; }
 <!-- TOAST -->
 <div class="toast" id="toast">一時保存しました</div>
 
-<!-- HEADER -->
-<div class="app-header">
-  <div class="header-inner">
-    <div>
-      <div class="header-title">アポ入力フォーム</div>
-      <div class="header-sub">出張買取 / アポインター用</div>
-    </div>
-    <div class="header-badge">出張</div>
-  </div>
-  <div class="progress-bar">
-    <div class="progress-fill" id="progressFill"></div>
-  </div>
-</div>
 
 <div class="main">
 
@@ -816,7 +803,8 @@ function updateProgress() {
   const fields = ['listName', 'phone', 'visitDate', 'closer', 'appointer'];
   const filled = fields.filter(id => document.getElementById(id)?.value).length;
   const pct = Math.round((filled / fields.length) * 100);
-  document.getElementById('progressFill').style.width = pct + '%';
+  const pf = document.getElementById('progressFill');
+  if (pf) pf.style.width = pct + '%';
 }
 
 // ── CONDITIONAL: 折り返し → 次チャレンジ日表示 ──

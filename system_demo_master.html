@@ -422,7 +422,6 @@
             /* 配車管理もモバイルで自然スクロール */
             #view1 {
                 height: auto;
-                min-height: 100dvh;
             }
 
             .notch { display: none; }
@@ -540,13 +539,20 @@
         function resizeIframe(iframe) {
             try {
                 const doc = iframe.contentDocument || iframe.contentWindow.document;
-                const h = Math.max(
-                    doc.documentElement.scrollHeight,
-                    doc.body ? doc.body.scrollHeight : 0
-                );
-                if (h > 100) {
-                    iframe.style.height = h + 'px';
-                }
+                const body = doc.body;
+                const html = doc.documentElement;
+                // min-height / padding-bottom を一時的に無効化して実コンテンツ高さを計測
+                const prevBodyMinH  = body.style.minHeight;
+                const prevBodyPadB  = body.style.paddingBottom;
+                const prevHtmlMinH  = html.style.minHeight;
+                body.style.minHeight    = '0';
+                body.style.paddingBottom = '0';
+                html.style.minHeight    = '0';
+                const h = Math.max(body.scrollHeight, body.offsetHeight);
+                body.style.minHeight    = prevBodyMinH;
+                body.style.paddingBottom = prevBodyPadB;
+                html.style.minHeight    = prevHtmlMinH;
+                if (h > 100) iframe.style.height = h + 'px';
             } catch (e) {}
         }
 
