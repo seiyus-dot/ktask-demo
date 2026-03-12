@@ -1,1191 +1,731 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アポ入力フォーム</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --navy: #0D1F3C;
-      --navy-md: #1A3260;
-      --blue: #1B4FD8;
-      --blue-lt: #EEF3FF;
-      --teal: #0891B2;
-      --green: #16A34A;
-      --green-lt: #DCFCE7;
-      --orange: #EA580C;
-      --red: #DC2626;
-      --gray1: #F8FAFC;
-      --gray2: #F1F5F9;
-      --gray3: #E2E8F0;
-      --gray4: #94A3B8;
-      --gray5: #64748B;
-      --gray6: #334155;
-      --text: #0F172A;
-      --border: #CBD5E1;
-      --radius: 10px;
-      --shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 4px 16px rgba(0, 0, 0, .06);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
-      background: var(--gray2);
-      color: var(--text);
-      min-height: 100dvh;
-      padding-bottom: 90px;
-    }
-
-    /* ── HEADER ── */
-    .app-header {
-      background: var(--navy);
-      padding: 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      max-width: 640px;
-      margin: 0 auto;
-    }
-
-    .header-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: white;
-      letter-spacing: .01em;
-    }
-
-    .header-sub {
-      font-size: 11px;
-      color: #94A3B8;
-      margin-top: 1px;
-    }
-
-    .header-badge {
-      background: var(--teal);
-      color: white;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 20px;
-      letter-spacing: .04em;
-    }
-
-    /* ── PROGRESS ── */
-    .progress-bar {
-      height: 3px;
-      background: var(--navy-md);
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--teal);
-      width: 33%;
-      transition: width .4s ease;
-    }
-
-    /* ── MAIN ── */
-    .main {
-      width: 100%;
-    }
-
-    .main-inner {
-      box-sizing: border-box;
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 16px 16px 0;
-    }
-
-    /* ── STEP INDICATOR ── */
-    .steps {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      align-items: center;
-      flex-shrink: 0;
-    }
-
-    .step-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray4);
-      letter-spacing: .03em;
-      text-transform: uppercase;
-    }
-
-    .step-item.active {
-      color: var(--blue);
-    }
-
-    .step-item.done {
-      color: var(--green);
-    }
-
-    .step-dot {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 2px solid var(--gray3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--gray4);
-      flex-shrink: 0;
-    }
-
-    .step-item.active .step-dot {
-      border-color: var(--blue);
-      background: var(--blue-lt);
-      color: var(--blue);
-    }
-
-    .step-item.done .step-dot {
-      border-color: var(--green);
-      background: var(--green-lt);
-      color: var(--green);
-    }
-
-    .step-sep {
-      flex: 1;
-      height: 1px;
-      background: var(--gray3);
-    }
-
-    /* ── SECTION CARD ── */
-    .card {
-      background: white;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      margin-bottom: 12px;
-    }
-
-    .card-header {
-      padding: 14px 18px 12px;
-      border-bottom: 1px solid var(--gray3);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-radius: var(--radius) var(--radius) 0 0;
-    }
-
-    .card-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-
-    .card-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: .01em;
-    }
-
-    .card-sub {
-      font-size: 11px;
-      color: var(--gray5);
-      margin-top: 1px;
-    }
-
-    .card-body {
-      padding: 16px 18px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    /* ── FIELD ── */
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .field-row {
-      display: grid;
-      gap: 10px;
-    }
-
-    .field-row.col2 {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .field-row.col3 {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    label {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: var(--gray6);
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .req {
-      font-size: 9px;
-      color: var(--red);
-      background: #FEE2E2;
-      padding: 1px 5px;
-      border-radius: 3px;
-      font-weight: 700;
-      letter-spacing: .02em;
-    }
-
-    .opt {
-      font-size: 9px;
-      color: var(--gray4);
-      background: var(--gray2);
-      padding: 1px 5px;
-      border-radius: 3px;
-      font-weight: 600;
-    }
-
-    input[type="text"],
-    input[type="tel"],
-    input[type="date"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 15px;
-      font-family: inherit;
-      color: var(--text);
-      background: white;
-      transition: border-color .15s, box-shadow .15s;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(27, 79, 216, .12);
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: var(--gray4);
-    }
-
-    select {
-      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 7L11 1' stroke='%2364748B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 36px;
-      cursor: pointer;
-    }
-
-    textarea {
-      resize: none;
-      line-height: 1.6;
-    }
-
-    /* ── RADIO GROUP ── */
-    .radio-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .radio-btn {
-      position: relative;
-    }
-
-    .radio-btn input {
-      display: none;
-    }
-
-    .radio-btn label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--gray6);
-      cursor: pointer;
-      transition: all .15s;
-      text-transform: none;
-      letter-spacing: 0;
-      background: white;
-      user-select: none;
-    }
-
-    .radio-btn input:checked+label {
-      border-color: var(--blue);
-      background: var(--blue-lt);
-      color: var(--blue);
-      font-weight: 700;
-    }
-
-    .radio-btn label:active {
-      transform: scale(.97);
-    }
-
-    /* ── AGE SELECT ── */
-    .age-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .age-chip {
-      position: relative;
-    }
-
-    .age-chip input {
-      display: none;
-    }
-
-    .age-chip label {
-      display: block;
-      padding: 8px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--gray5);
-      cursor: pointer;
-      transition: all .15s;
-      background: white;
-      user-select: none;
-      text-transform: none;
-      letter-spacing: 0;
-    }
-
-    .age-chip input:checked+label {
-      border-color: var(--navy);
-      background: var(--navy);
-      color: white;
-    }
-
-    /* ── CONDITIONAL FIELD ── */
-    .cond-field {
-      display: none;
-      animation: slideDown .2s ease;
-    }
-
-    .cond-field.show {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-6px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* ── RESULT SELECT ── */
-    .result-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-    }
-
-    .result-btn {
-      position: relative;
-    }
-
-    .result-btn input {
-      display: none;
-    }
-
-    .result-btn label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 12px 8px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--gray5);
-      cursor: pointer;
-      transition: all .15s;
-      text-align: center;
-      background: white;
-      user-select: none;
-      text-transform: none;
-      letter-spacing: 0;
-      line-height: 1.3;
-    }
-
-    .result-btn label .emoji {
-      font-size: 20px;
-    }
-
-    .result-btn input:checked+label {
-      font-weight: 700;
-    }
-
-    .result-btn.success input:checked+label {
-      border-color: var(--green);
-      background: var(--green-lt);
-      color: var(--green);
-    }
-
-    .result-btn.pending input:checked+label {
-      border-color: var(--orange);
-      background: #FEF3C7;
-      color: var(--orange);
-    }
-
-    .result-btn.ng input:checked+label {
-      border-color: var(--gray4);
-      background: var(--gray2);
-      color: var(--gray6);
-    }
-
-    /* ── TIME SLOT ── */
-    .time-slots {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .time-slot {
-      position: relative;
-    }
-
-    .time-slot input {
-      display: none;
-    }
-
-    .time-slot label {
-      display: block;
-      padding: 10px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--gray5);
-      cursor: pointer;
-      transition: all .15s;
-      text-align: center;
-      background: white;
-      user-select: none;
-      text-transform: none;
-      letter-spacing: 0;
-    }
-
-    .time-slot input:checked+label {
-      border-color: var(--teal);
-      background: var(--teal);
-      color: white;
-    }
-
-    /* ── NOTE BOX ── */
-    .note-box {
-      background: var(--blue-lt);
-      border: 1px solid #BFDBFE;
-      border-radius: 8px;
-      padding: 10px 13px;
-      font-size: 11.5px;
-      color: #1E40AF;
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-      line-height: 1.5;
-    }
-
-    /* ── BOTTOM BAR ── */
-    .bottom-bar {
-      flex-shrink: 0;
-      background: white;
-      border-top: 1px solid var(--gray3);
-      padding: 12px 16px;
-      box-shadow: 0 -4px 16px rgba(0, 0, 0, .08);
-    }
-
-    .bottom-inner {
-      max-width: 640px;
-      margin: 0 auto;
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn {
-      padding: 14px 20px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all .15s;
-      border: none;
-      letter-spacing: .01em;
-    }
-
-    .btn:active {
-      transform: scale(.97);
-    }
-
-    .btn-primary {
-      flex: 1;
-      background: var(--navy);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .btn-primary:hover {
-      background: var(--navy-md);
-    }
-
-    .btn-save {
-      background: var(--gray2);
-      color: var(--gray6);
-      padding: 14px 16px;
-      font-size: 13px;
-    }
-
-    .btn-save:hover {
-      background: var(--gray3);
-    }
-
-    /* ── SAVED ITEMS ── */
-    .saved-section {
-      margin-bottom: 12px;
-    }
-
-    .saved-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 4px;
-      margin-bottom: 8px;
-    }
-
-    .saved-title {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--gray5);
-    }
-
-    .saved-count {
-      background: var(--navy);
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 10px;
-    }
-
-    .saved-item {
-      background: white;
-      border-radius: 8px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: var(--shadow);
-      margin-bottom: 8px;
-    }
-
-    .saved-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      background: var(--navy);
-      color: white;
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .saved-info {
-      flex: 1;
-    }
-
-    .saved-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .saved-meta {
-      font-size: 11px;
-      color: var(--gray5);
-      margin-top: 2px;
-    }
-
-    .saved-result {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 20px;
-    }
-
-    .saved-result.ok {
-      background: var(--green-lt);
-      color: var(--green);
-    }
-
-    .saved-result.ng {
-      background: var(--gray2);
-      color: var(--gray5);
-    }
-
-    .saved-result.pending {
-      background: #FEF3C7;
-      color: var(--orange);
-    }
-
-    /* ── SEND ALL BUTTON ── */
-    .send-all-btn {
-      width: 100%;
-      padding: 16px;
-      border-radius: 10px;
-      background: var(--teal);
-      color: white;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: inherit;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all .15s;
-      margin-bottom: 12px;
-    }
-
-    .send-all-btn:hover {
-      background: #0779A0;
-    }
-
-    .send-all-btn:active {
-      transform: scale(.98);
-    }
-
-    /* ── TOAST ── */
-    .toast {
-      position: fixed;
-      top: 72px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-10px);
-      background: var(--navy);
-      color: white;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      opacity: 0;
-      transition: all .3s;
-      z-index: 200;
-      white-space: nowrap;
-      pointer-events: none;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* ── DIVIDER ── */
-    .divider {
-      height: 1px;
-      background: var(--gray3);
-      margin: 4px 0;
-    }
-
-    /* ── STEP TABS ── */
-    .step-card {
-      display: none;
-    }
-
-    .step-card.active {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .step-item {
-      cursor: pointer;
-    }
-
-    .step-item:hover .step-dot {
-      border-color: var(--navy);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アポ入力フォーム</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0D1F3C;
+  --navy-md: #1A3260;
+  --blue:    #1B4FD8;
+  --blue-lt: #EEF3FF;
+  --teal:    #0891B2;
+  --green:   #16A34A;
+  --green-lt:#DCFCE7;
+  --orange:  #EA580C;
+  --red:     #DC2626;
+  --gray1:   #F8FAFC;
+  --gray2:   #F1F5F9;
+  --gray3:   #E2E8F0;
+  --gray4:   #94A3B8;
+  --gray5:   #64748B;
+  --gray6:   #334155;
+  --text:    #0F172A;
+  --border:  #CBD5E1;
+  --radius:  10px;
+  --shadow:  0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
+  background: var(--gray2);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* ── HEADER ── */
+.app-header {
+  background: var(--navy);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.header-title { font-size: 16px; font-weight: 700; color: white; }
+.header-sub   { font-size: 11px; color: #94A3B8; margin-top: 1px; }
+.header-badge {
+  background: var(--teal);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+/* ── PROGRESS ── */
+.progress-bar { height: 3px; background: var(--navy-md); }
+.progress-fill { height: 100%; background: var(--teal); width: 0%; transition: width .4s ease; }
+
+/* ── MAIN ── */
+.main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 16px 0;
+}
+
+/* ── STEP INDICATOR ── */
+.steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray4);
+  letter-spacing: .03em;
+  cursor: pointer;
+}
+.step-item.active { color: var(--blue); }
+.step-item.done   { color: var(--green); }
+.step-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--gray3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  color: var(--gray4);
+  flex-shrink: 0;
+}
+.step-item.active .step-dot { border-color: var(--blue); background: var(--blue-lt); color: var(--blue); }
+.step-item.done   .step-dot { border-color: var(--green); background: var(--green-lt); color: var(--green); }
+.step-sep { flex: 1; height: 1px; background: var(--gray3); }
+
+/* ── SAVED SECTION ── */
+.saved-section {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.saved-header {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--gray3);
+}
+.saved-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.saved-count {
+  font-size: 12px; font-weight: 700;
+  background: var(--blue-lt); color: var(--blue);
+  padding: 2px 8px; border-radius: 10px;
+}
+.saved-list { padding: 8px 12px; }
+.saved-item {
+  background: var(--gray2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.saved-num {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  background: var(--navy); color: white;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.saved-info { flex: 1; min-width: 0; }
+.saved-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.saved-meta { font-size: 11px; color: var(--gray5); margin-top: 1px; }
+.saved-result {
+  font-size: 11px; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px; flex-shrink: 0;
+}
+.saved-result.ok      { background: var(--green-lt); color: var(--green); }
+.saved-result.pending { background: #FEF3C7; color: var(--orange); }
+.saved-result.ng      { background: var(--gray3); color: var(--gray5); }
+.send-all-btn {
+  width: 100%; margin: 0 12px 12px; width: calc(100% - 24px);
+  padding: 13px 16px;
+  border-radius: 10px; background: var(--teal); color: white;
+  font-size: 14px; font-weight: 700; font-family: inherit;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.send-all-btn:active { opacity: .85; }
+
+/* ── CARD ── */
+.card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 12px;
+}
+.card-header {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--gray3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.card-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.card-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.card-sub   { font-size: 11px; color: var(--gray5); margin-top: 1px; }
+.card-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── STEP CARDS ── */
+.step-card { display: none; }
+.step-card.active { display: block; }
+
+/* ── FIELDS ── */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-row { display: grid; gap: 10px; }
+.field-row.col2 { grid-template-columns: 1fr 1fr; }
+
+label {
+  font-size: 11.5px; font-weight: 700;
+  color: var(--gray6);
+  letter-spacing: .04em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 5px;
+}
+.req { font-size: 9px; color: var(--red); background: #FEE2E2; padding: 1px 5px; border-radius: 3px; font-weight: 700; }
+.opt { font-size: 9px; color: var(--gray4); background: var(--gray2); padding: 1px 5px; border-radius: 3px; }
+
+input[type="text"],
+input[type="tel"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+  transition: border-color .15s, box-shadow .15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(27,79,216,.12);
+}
+input::placeholder, textarea::placeholder { color: var(--gray4); }
+textarea { resize: none; line-height: 1.6; }
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 7L11 1' stroke='%2364748B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+/* ── AGE CHIPS ── */
+.age-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.age-chip { position: relative; }
+.age-chip input { display: none; }
+.age-chip label {
+  display: block;
+  padding: 8px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px; font-weight: 600;
+  color: var(--gray5);
+  cursor: pointer;
+  background: white;
+  user-select: none;
+  text-transform: none; letter-spacing: 0;
+}
+.age-chip input:checked + label { border-color: var(--navy); background: var(--navy); color: white; }
+
+/* ── TIME SLOTS ── */
+.time-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.time-slot { position: relative; }
+.time-slot input { display: none; }
+.time-slot label {
+  display: block;
+  padding: 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  color: var(--gray5);
+  cursor: pointer;
+  text-align: center;
+  background: white;
+  user-select: none;
+  text-transform: none; letter-spacing: 0;
+}
+.time-slot input:checked + label { border-color: var(--teal); background: var(--teal); color: white; }
+
+/* ── RESULT BUTTONS ── */
+.result-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.result-btn { position: relative; }
+.result-btn input { display: none; }
+.result-btn label {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 12px 8px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 11px; font-weight: 700; color: var(--gray5);
+  cursor: pointer; text-align: center; background: white;
+  user-select: none; text-transform: none; letter-spacing: 0; line-height: 1.3;
+}
+.result-btn.success input:checked + label { border-color: var(--green); background: var(--green-lt); color: var(--green); }
+.result-btn.pending input:checked + label { border-color: var(--orange); background: #FEF3C7; color: var(--orange); }
+.result-btn.ng      input:checked + label { border-color: var(--gray4); background: var(--gray2); color: var(--gray6); }
+
+/* ── CHECKBOX GROUP ── */
+.check-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.check-item { position: relative; }
+.check-item input { display: none; }
+.check-item label {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 14px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 13px; font-weight: 500; color: var(--gray6);
+  cursor: pointer; background: white;
+  user-select: none; text-transform: none; letter-spacing: 0;
+}
+.check-item input:checked + label { border-color: var(--blue); background: var(--blue-lt); color: var(--blue); font-weight: 700; }
+
+/* ── CONDITIONAL FIELD ── */
+.cond-field { display: none; }
+.cond-field.show { display: flex; flex-direction: column; gap: 5px; }
+
+/* ── NOTE BOX ── */
+.note-box {
+  background: var(--blue-lt); border: 1px solid #BFDBFE;
+  border-radius: 8px; padding: 10px 13px;
+  font-size: 11.5px; color: #1E40AF;
+  display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
+}
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--gray3); }
+
+/* ── NAV BUTTONS (card内) ── */
+.card-nav {
+  display: flex;
+  gap: 10px;
+  padding-top: 4px;
+}
+.btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 15px; font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  letter-spacing: .01em;
+  transition: opacity .15s;
+}
+.btn:active { opacity: .8; }
+.btn-primary {
+  flex: 1;
+  background: var(--navy); color: white;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-secondary {
+  background: var(--gray2); color: var(--gray6);
+  padding: 14px 16px; font-size: 13px;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  top: 72px; left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: var(--navy); color: white;
+  padding: 10px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0; transition: all .3s;
+  z-index: 9999; white-space: nowrap; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
 </head>
-
 <body>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast">一時保存しました</div>
+<div class="toast" id="toast"></div>
 
-  <!-- HEADER -->
-  <div class="app-header">
-    <div class="header-inner">
-      <div>
-        <div class="header-title">アポ入力フォーム</div>
-        <div class="header-sub">出張買取 / アポインター用</div>
-      </div>
-      <div class="header-badge">出張</div>
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-inner">
+    <div>
+      <div class="header-title">アポ入力フォーム</div>
+      <div class="header-sub">出張買取 / アポインター用</div>
     </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill"></div>
+    <div class="header-badge">出張</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STEP INDICATOR -->
+  <div class="steps">
+    <div class="step-item active" id="step1" onclick="goToStep(1)">
+      <div class="step-dot">1</div>お客様情報
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item" id="step2" onclick="goToStep(2)">
+      <div class="step-dot">2</div>アポ内容
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item" id="step3" onclick="goToStep(3)">
+      <div class="step-dot">3</div>確認・保存
     </div>
   </div>
 
-  <div class="main">
-    <div class="main-inner">
+  <!-- 保存済みアポ -->
+  <div class="saved-section" id="savedSection" style="display:none;">
+    <div class="saved-header">
+      <div class="saved-title">本日の保存済みアポ</div>
+      <div class="saved-count" id="savedCount">0件</div>
+    </div>
+    <div class="saved-list" id="savedList"></div>
+    <button class="send-all-btn" onclick="sendAll()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      まとめて送信（<span id="sendCount">0</span>件）
+    </button>
+  </div>
 
-      <!-- STEP INDICATOR -->
-      <div class="steps">
-        <div class="step-item active" id="step1" onclick="goToStep(1)">
-          <div class="step-dot">1</div>
-          お客様情報
+  <!-- ─ STEP 1: お客様情報 ─ -->
+  <div class="card step-card active" id="section1">
+    <div class="card-header">
+      <div class="card-icon" style="background:#EEF3FF;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B4FD8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div>
+        <div class="card-title">お客様情報</div>
+        <div class="card-sub">アポ先の基本情報を入力</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="field-row col2">
+        <div class="field">
+          <label>リスト名義 <span class="req">必須</span></label>
+          <input type="text" id="listName" placeholder="山田 花子" oninput="updateProgress()">
         </div>
-        <div class="step-sep"></div>
-        <div class="step-item" id="step2" onclick="goToStep(2)">
-          <div class="step-dot">2</div>
-          アポ内容
-        </div>
-        <div class="step-sep"></div>
-        <div class="step-item" id="step3" onclick="goToStep(3)">
-          <div class="step-dot">3</div>
-          確認・保存
+        <div class="field">
+          <label>実際のお名前 <span class="opt">任意</span></label>
+          <input type="text" id="realName" placeholder="（異なる場合）">
         </div>
       </div>
 
-      <!-- ─ SAVED ITEMS ─ -->
-      <div class="saved-section" id="savedSection" style="display:none;">
-        <div class="saved-header">
-          <div class="saved-title">本日の保存済みアポ</div>
-          <div class="saved-count" id="savedCount">0件</div>
+      <div class="field">
+        <label>電話番号 <span class="req">必須</span></label>
+        <input type="tel" id="phone" placeholder="090-0000-0000" oninput="updateProgress()">
+      </div>
+
+      <div class="field">
+        <label>年代 <span class="req">必須</span></label>
+        <div class="age-group">
+          <div class="age-chip"><input type="radio" name="age" id="age50" value="50代"><label for="age50">50代</label></div>
+          <div class="age-chip"><input type="radio" name="age" id="age60" value="60代"><label for="age60">60代</label></div>
+          <div class="age-chip"><input type="radio" name="age" id="age70" value="70代"><label for="age70">70代</label></div>
+          <div class="age-chip"><input type="radio" name="age" id="age80" value="80代"><label for="age80">80代</label></div>
+          <div class="age-chip"><input type="radio" name="age" id="age90" value="90代以上"><label for="age90">90代〜</label></div>
         </div>
-        <div id="savedList"></div>
-        <button class="send-all-btn" onclick="sendAll()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-          </svg>
-          まとめて送信（<span id="sendCount">0</span>件）
+      </div>
+
+      <div class="field">
+        <label>住所（エリア） <span class="opt">任意</span></label>
+        <input type="text" id="address" placeholder="〇〇市〇〇区">
+      </div>
+
+      <!-- ナビボタン -->
+      <div class="card-nav">
+        <button class="btn btn-secondary" onclick="saveDraft()">一時保存</button>
+        <button class="btn btn-primary" onclick="goToStep(2)">次へ ›</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─ STEP 2: アポ内容 ─ -->
+  <div class="card step-card" id="section2">
+    <div class="card-header">
+      <div class="card-icon" style="background:#E0F6FC;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0891B2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div>
+        <div class="card-title">アポ内容</div>
+        <div class="card-sub">訪問日時・担当・結果</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="field">
+        <label>訪問予定日 <span class="req">必須</span></label>
+        <input type="date" id="visitDate" oninput="updateProgress()">
+      </div>
+
+      <div class="field">
+        <label>時間帯 <span class="req">必須</span></label>
+        <div class="time-slots">
+          <div class="time-slot"><input type="radio" name="time" id="t1" value="午前（9〜12時）"><label for="t1">午前<br>9〜12時</label></div>
+          <div class="time-slot"><input type="radio" name="time" id="t2" value="午後（12〜15時）"><label for="t2">午後<br>12〜15時</label></div>
+          <div class="time-slot"><input type="radio" name="time" id="t3" value="夕方（15〜18時）"><label for="t3">夕方<br>15〜18時</label></div>
+          <div class="time-slot"><input type="radio" name="time" id="t4" value="10時頃"><label for="t4">10時頃</label></div>
+          <div class="time-slot"><input type="radio" name="time" id="t5" value="13時頃"><label for="t5">13時頃</label></div>
+          <div class="time-slot"><input type="radio" name="time" id="t6" value="15時頃"><label for="t6">15時頃</label></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>担当クローザー <span class="req">必須</span></label>
+        <select id="closer" onchange="updateProgress()">
+          <option value="">選択してください</option>
+          <option>田中</option>
+          <option>鈴木</option>
+          <option>佐藤</option>
+          <option>渡辺</option>
+          <option>伊藤</option>
+        </select>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <label>アポ結果 <span class="req">必須</span></label>
+        <div class="result-group">
+          <div class="result-btn success">
+            <input type="radio" name="result" id="r1" value="アポ獲得">
+            <label for="r1">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              アポ獲得
+            </label>
+          </div>
+          <div class="result-btn pending">
+            <input type="radio" name="result" id="r2" value="折り返し">
+            <label for="r2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              折り返し
+            </label>
+          </div>
+          <div class="result-btn ng">
+            <input type="radio" name="result" id="r3" value="NG">
+            <label for="r3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              NG
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="cond-field" id="nextChallenge">
+        <label>次チャレンジ日 <span class="opt">任意</span></label>
+        <input type="date" id="nextDate">
+      </div>
+
+      <div class="field">
+        <label>品目（出てきそうなもの） <span class="opt">任意</span></label>
+        <div class="check-group">
+          <div class="check-item"><input type="checkbox" id="item1"><label for="item1">貴金属</label></div>
+          <div class="check-item"><input type="checkbox" id="item2"><label for="item2">ブランド品</label></div>
+          <div class="check-item"><input type="checkbox" id="item3"><label for="item3">時計</label></div>
+          <div class="check-item"><input type="checkbox" id="item4"><label for="item4">着物</label></div>
+          <div class="check-item"><input type="checkbox" id="item5"><label for="item5">切手・古銭</label></div>
+          <div class="check-item"><input type="checkbox" id="item6"><label for="item6">その他</label></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>メモ <span class="opt">任意</span></label>
+        <textarea id="memo" rows="3" placeholder="特記事項・お客様の様子など"></textarea>
+      </div>
+
+      <!-- ナビボタン -->
+      <div class="card-nav">
+        <button class="btn btn-secondary" onclick="goToStep(1)">← 戻る</button>
+        <button class="btn btn-primary" onclick="goToStep(3)">次へ ›</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─ STEP 3: 確認・保存 ─ -->
+  <div class="card step-card" id="section3">
+    <div class="card-header">
+      <div class="card-icon" style="background:#F3EEFF;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B21B6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div>
+        <div class="card-title">アポインター情報</div>
+        <div class="card-sub">自分の名前を選択して保存</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="field">
+        <label>アポインター名 <span class="req">必須</span></label>
+        <select id="appointer" onchange="updateProgress()">
+          <option value="">選択してください</option>
+          <option>佐々木</option>
+          <option>中村</option>
+          <option>小林</option>
+          <option>加藤</option>
+          <option>吉田</option>
+        </select>
+      </div>
+
+      <div class="note-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>保存後、まとめて送信ボタンでLINEグループへ自動通知されます</span>
+      </div>
+
+      <!-- ナビボタン -->
+      <div class="card-nav">
+        <button class="btn btn-secondary" onclick="goToStep(2)">← 戻る</button>
+        <button class="btn btn-primary" onclick="saveItem()" style="background:var(--teal);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          保存して完了
         </button>
       </div>
 
-      <!-- ─ SECTION 1: お客様情報 ─ -->
-      <div class="card step-card active" id="section1">
-        <div class="card-header">
-          <div class="card-icon" style="background:#EEF3FF;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="#1B4FD8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg></div>
-          <div>
-            <div class="card-title">お客様情報</div>
-            <div class="card-sub">アポ先の基本情報を入力</div>
-          </div>
-        </div>
-        <div class="card-body">
-
-          <div class="field-row col2">
-            <div class="field">
-              <label>リスト名義 <span class="req">必須</span></label>
-              <input type="text" id="listName" placeholder="山田 花子" oninput="updateProgress()">
-            </div>
-            <div class="field">
-              <label>実際のお名前 <span class="opt">任意</span></label>
-              <input type="text" id="realName" placeholder="（異なる場合）">
-            </div>
-          </div>
-
-          <div class="field">
-            <label>電話番号 <span class="req">必須</span></label>
-            <input type="tel" id="phone" placeholder="090-0000-0000" oninput="updateProgress()">
-          </div>
-
-          <div class="field">
-            <label>年代 <span class="req">必須</span></label>
-            <div class="age-group">
-              <div class="age-chip"><input type="radio" name="age" id="age50" value="50代"><label for="age50">50代</label>
-              </div>
-              <div class="age-chip"><input type="radio" name="age" id="age60" value="60代"><label for="age60">60代</label>
-              </div>
-              <div class="age-chip"><input type="radio" name="age" id="age70" value="70代"><label for="age70">70代</label>
-              </div>
-              <div class="age-chip"><input type="radio" name="age" id="age80" value="80代"><label for="age80">80代</label>
-              </div>
-              <div class="age-chip"><input type="radio" name="age" id="age90" value="90代以上"><label
-                  for="age90">90代〜</label></div>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>住所（エリア） <span class="opt">任意</span></label>
-            <input type="text" id="address" placeholder="〇〇市〇〇区">
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ─ SECTION 2: アポ内容 ─ -->
-      <div class="card step-card" id="section2">
-        <div class="card-header">
-          <div class="card-icon" style="background:#E0F6FC;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="#0891B2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg></div>
-          <div>
-            <div class="card-title">アポ内容</div>
-            <div class="card-sub">訪問日時・担当・結果</div>
-          </div>
-        </div>
-        <div class="card-body">
-
-          <div class="field">
-            <label>訪問予定日 <span class="req">必須</span></label>
-            <input type="date" id="visitDate" oninput="updateProgress()">
-          </div>
-
-          <div class="field">
-            <label>時間帯 <span class="req">必須</span></label>
-            <div class="time-slots">
-              <div class="time-slot"><input type="radio" name="time" id="t1" value="午前（9〜12時）"><label
-                  for="t1">午前<br>9〜12時</label></div>
-              <div class="time-slot"><input type="radio" name="time" id="t2" value="午後（12〜15時）"><label
-                  for="t2">午後<br>12〜15時</label></div>
-              <div class="time-slot"><input type="radio" name="time" id="t3" value="夕方（15〜18時）"><label
-                  for="t3">夕方<br>15〜18時</label></div>
-              <div class="time-slot"><input type="radio" name="time" id="t4" value="10時頃"><label for="t4">10時頃</label>
-              </div>
-              <div class="time-slot"><input type="radio" name="time" id="t5" value="13時頃"><label for="t5">13時頃</label>
-              </div>
-              <div class="time-slot"><input type="radio" name="time" id="t6" value="15時頃"><label for="t6">15時頃</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>担当クローザー <span class="req">必須</span></label>
-            <select id="closer" onchange="updateProgress()">
-              <option value="">選択してください</option>
-              <option>田中</option>
-              <option>鈴木</option>
-              <option>佐藤</option>
-              <option>渡辺</option>
-              <option>伊藤</option>
-            </select>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="field">
-            <label>アポ結果 <span class="req">必須</span></label>
-            <div class="result-group">
-              <div class="result-btn success">
-                <input type="radio" name="result" id="r1" value="アポ獲得">
-                <label for="r1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>アポ獲得</label>
-              </div>
-              <div class="result-btn pending">
-                <input type="radio" name="result" id="r2" value="折り返し">
-                <label for="r2"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="23 4 23 10 17 10" />
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                  </svg>折り返し</label>
-              </div>
-              <div class="result-btn ng">
-                <input type="radio" name="result" id="r3" value="NG">
-                <label for="r3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>NG</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- 次チャレンジ（折り返し時のみ） -->
-          <div class="cond-field" id="nextChallenge">
-            <label>次チャレンジ日 <span class="opt">任意</span></label>
-            <input type="date" id="nextDate" placeholder="">
-          </div>
-
-          <div class="field">
-            <label>品目（出てきそうなもの） <span class="opt">任意</span></label>
-            <div class="radio-group">
-              <div class="radio-btn"><input type="checkbox" id="item1"><label for="item1">貴金属</label></div>
-              <div class="radio-btn"><input type="checkbox" id="item2"><label for="item2">ブランド品</label></div>
-              <div class="radio-btn"><input type="checkbox" id="item3"><label for="item3">時計</label></div>
-              <div class="radio-btn"><input type="checkbox" id="item4"><label for="item4">着物</label></div>
-              <div class="radio-btn"><input type="checkbox" id="item5"><label for="item5">切手・古銭</label></div>
-              <div class="radio-btn"><input type="checkbox" id="item6"><label for="item6">その他</label></div>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>メモ <span class="opt">任意</span></label>
-            <textarea id="memo" rows="3" placeholder="特記事項・お客様の様子など"></textarea>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ─ SECTION 3: アポインター ─ -->
-      <div class="card step-card" id="section3">
-        <div class="card-header">
-          <div class="card-icon" style="background:#F3EEFF;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="#5B21B6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg></div>
-          <div>
-            <div class="card-title">アポインター情報</div>
-            <div class="card-sub">自分の名前を選択</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="field">
-            <label>アポインター名 <span class="req">必須</span></label>
-            <select id="appointer" onchange="updateProgress()">
-              <option value="">選択してください</option>
-              <option>佐々木</option>
-              <option>中村</option>
-              <option>小林</option>
-              <option>加藤</option>
-              <option>吉田</option>
-            </select>
-          </div>
-
-          <div class="note-box">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <span>保存後、まとめて送信ボタンでLINEグループへ自動通知されます</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- bottom padding -->
-      <div style="height:8px;"></div>
-
-    </div><!-- /main-inner -->
-  </div><!-- /main -->
-
-  <!-- BOTTOM BAR -->
-  <div class="bottom-bar">
-    <div class="bottom-inner">
-      <button class="btn btn-save" id="leftBtn" onclick="leftAction()">一時保存</button>
-      <button class="btn btn-primary" id="rightBtn" onclick="rightAction()">
-        次へ ›
-      </button>
     </div>
   </div>
 
-  <script>
-    // ── STATE ──
-    let savedItems = [];
+</div><!-- /main -->
 
-    // ── PROGRESS ──
-    function updateProgress() {
-      const fields = ['listName', 'phone', 'visitDate', 'closer', 'appointer'];
-      const filled = fields.filter(id => document.getElementById(id)?.value).length;
-      const pct = Math.round((filled / fields.length) * 100);
-      document.getElementById('progressFill').style.width = pct + '%';
+<script>
+// ── STATE ──
+let savedItems = [];
+
+// ── PROGRESS ──
+function updateProgress() {
+  const fields = ['listName', 'phone', 'visitDate', 'closer', 'appointer'];
+  const filled = fields.filter(id => document.getElementById(id)?.value).length;
+  document.getElementById('progressFill').style.width = Math.round((filled / fields.length) * 100) + '%';
+}
+
+// ── STEP NAVIGATION ──
+function goToStep(step) {
+  for (let i = 1; i <= 3; i++) {
+    const card = document.getElementById('section' + i);
+    const dot  = document.getElementById('step' + i);
+    if (card) card.classList.toggle('active', i === step);
+    if (dot) {
+      dot.className = 'step-item' + (i === step ? ' active' : i < step ? ' done' : '');
     }
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-    // ── CONDITIONAL: 折り返し → 次チャレンジ日表示 ──
-    document.querySelectorAll('input[name="result"]').forEach(r => {
-      r.addEventListener('change', () => {
-        const nc = document.getElementById('nextChallenge');
-        nc.classList.toggle('show', r.value === '折り返し' && r.checked);
-      });
-    });
+// ── 折り返し → 次チャレンジ日 ──
+document.querySelectorAll('input[name="result"]').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('nextChallenge').classList.toggle('show', r.value === '折り返し' && r.checked);
+  });
+});
 
-    // ── SAVE ITEM ──
-    function saveItem() {
-      const name = document.getElementById('listName').value;
-      const phone = document.getElementById('phone').value;
-      const date = document.getElementById('visitDate').value;
-      const closer = document.getElementById('closer').value;
-      const appointer = document.getElementById('appointer').value;
-      const result = document.querySelector('input[name="result"]:checked')?.value;
-      const age = document.querySelector('input[name="age"]:checked')?.value;
+// ── SAVE ITEM ──
+function saveItem() {
+  const name      = document.getElementById('listName').value;
+  const phone     = document.getElementById('phone').value;
+  const date      = document.getElementById('visitDate').value;
+  const closer    = document.getElementById('closer').value;
+  const appointer = document.getElementById('appointer').value;
+  const result    = document.querySelector('input[name="result"]:checked')?.value;
+  const age       = document.querySelector('input[name="age"]:checked')?.value;
 
-      if (!name || !phone || !date || !closer || !appointer || !result) {
-        showToast('必須項目を入力してください', '#DC2626');
-        return;
-      }
+  if (!name || !phone || !date || !closer || !appointer || !result) {
+    showToast('必須項目を入力してください', '#DC2626'); return;
+  }
 
-      const item = { id: Date.now(), name, phone, date, closer, appointer, result, age };
-      savedItems.push(item);
-      renderSaved();
-      clearForm();
-      showToast('保存しました（' + savedItems.length + '件）');
-      goToStep(1);
-    }
+  savedItems.push({ id: Date.now(), name, phone, date, closer, appointer, result, age });
+  renderSaved();
+  clearForm();
+  showToast('保存しました（' + savedItems.length + '件）');
+  goToStep(1);
+}
 
-    // ── SAVE DRAFT ──
-    function saveDraft() {
-      showToast('下書き保存しました');
-    }
+// ── SAVE DRAFT ──
+function saveDraft() { showToast('下書き保存しました'); }
 
-    // ── RENDER SAVED ──
-    function renderSaved() {
-      const section = document.getElementById('savedSection');
-      const list = document.getElementById('savedList');
-      const count = document.getElementById('savedCount');
-      const sendCount = document.getElementById('sendCount');
-
-      section.style.display = savedItems.length ? 'block' : 'none';
-      count.textContent = savedItems.length + '件';
-      sendCount.textContent = savedItems.length;
-
-      list.innerHTML = savedItems.map((item, i) => {
-        const resultClass = item.result === 'アポ獲得' ? 'ok' : item.result === '折り返し' ? 'pending' : 'ng';
-        const dateStr = item.date ? new Date(item.date).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' }) : '';
-        return `
-      <div class="saved-item">
-        <div class="saved-num">${i + 1}</div>
-        <div class="saved-info">
-          <div class="saved-name">${item.name}${item.age ? '（' + item.age + '）' : ''}</div>
-          <div class="saved-meta">${dateStr} / クローザー：${item.closer} / ${item.appointer}</div>
-        </div>
-        <div class="saved-result ${resultClass}">${item.result}</div>
+// ── RENDER SAVED ──
+function renderSaved() {
+  const section = document.getElementById('savedSection');
+  const list    = document.getElementById('savedList');
+  document.getElementById('savedCount').textContent = savedItems.length + '件';
+  document.getElementById('sendCount').textContent  = savedItems.length;
+  section.style.display = savedItems.length ? 'block' : 'none';
+  list.innerHTML = savedItems.map((item, i) => {
+    const cls     = item.result === 'アポ獲得' ? 'ok' : item.result === '折り返し' ? 'pending' : 'ng';
+    const dateStr = item.date ? new Date(item.date).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' }) : '';
+    return `<div class="saved-item">
+      <div class="saved-num">${i + 1}</div>
+      <div class="saved-info">
+        <div class="saved-name">${item.name}${item.age ? '（' + item.age + '）' : ''}</div>
+        <div class="saved-meta">${dateStr} / ${item.closer} / ${item.appointer}</div>
       </div>
-    `;
-      }).join('');
-    }
+      <div class="saved-result ${cls}">${item.result}</div>
+    </div>`;
+  }).join('');
+}
 
-    // ── SEND ALL ──
-    function sendAll() {
-      if (!savedItems.length) return;
-      showToast('送信しました（' + savedItems.length + '件）', '#0891B2');
-      setTimeout(() => {
-        savedItems = [];
-        renderSaved();
-      }, 1500);
-    }
+// ── SEND ALL ──
+function sendAll() {
+  if (!savedItems.length) return;
+  showToast('送信しました（' + savedItems.length + '件）', '#0891B2');
+  setTimeout(() => { savedItems = []; renderSaved(); }, 1500);
+}
 
-    // ── CLEAR FORM ──
-    function clearForm() {
-      ['listName', 'realName', 'phone', 'address', 'visitDate', 'memo', 'nextDate'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-      document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-      document.getElementById('nextChallenge').classList.remove('show');
-    }
+// ── CLEAR FORM ──
+function clearForm() {
+  ['listName','realName','phone','address','visitDate','memo','nextDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
+  document.getElementById('nextChallenge').classList.remove('show');
+  updateProgress();
+}
 
-    // ── TOAST ──
-    function showToast(msg, bg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.background = bg || 'var(--navy)';
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2200);
-    }
+// ── TOAST ──
+function showToast(msg, bg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = bg || 'var(--navy)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
 
-    // ── STEP NAVIGATION ──
-    let currentStep = 1;
-
-    function goToStep(step) {
-      currentStep = step;
-      for (let i = 1; i <= 3; i++) {
-        const card = document.getElementById('section' + i);
-        if (card) card.classList.toggle('active', i === step);
-        const dot = document.getElementById('step' + i);
-        if (dot) {
-          dot.className = 'step-item';
-          if (i === step) dot.classList.add('active');
-          else if (i < step) dot.classList.add('done');
-        }
-      }
-      const leftBtn = document.getElementById('leftBtn');
-      const rightBtn = document.getElementById('rightBtn');
-      leftBtn.textContent = step === 1 ? '一時保存' : '← 戻る';
-      rightBtn.textContent = step < 3 ? '次へ ›' : '保存して完了';
-      const mainEl = document.querySelector('.main');
-      if (mainEl) mainEl.scrollTop = 0;
-      window.scrollTo(0, 0);
-      updateProgress();
-    }
-
-    function leftAction() {
-      if (currentStep === 1) saveDraft();
-      else goToStep(currentStep - 1);
-    }
-
-    function rightAction() {
-      if (currentStep < 3) goToStep(currentStep + 1);
-      else saveItem();
-    }
-
-    // ── INIT ──
-    document.getElementById('visitDate').valueAsDate = new Date();
-    goToStep(1);
-  </script>
+updateProgress();
+</script>
 </body>
-
 </html>
